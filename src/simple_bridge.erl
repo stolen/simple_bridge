@@ -38,6 +38,14 @@ start(Backend) ->
 
 start(Backend, Handler) when is_atom(Backend) ->
     application:load(simple_bridge),
+    case simple_bridge_util:get_env(start_listener, true) of
+        true ->
+            validate_and_listen(Backend, Handler);
+        false ->
+            dummy_simple_bridge_sup:start_link()
+    end.
+
+validate_and_listen(Backend, Handler) ->
     Handler2 = get_handler_set_env(Handler),
     Backend2 = get_backend_set_env(Backend),
 
